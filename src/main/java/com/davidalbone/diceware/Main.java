@@ -6,24 +6,36 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main {
-    public static void main(String args[]) throws IOException {
+
+    private static final Logger logger = Logger.getLogger(Main.class.getName());
+
+    public static void main(String[] args) {
 
         StringBuilder dicewareBuilder = new StringBuilder();
 
         HashMap<String, String> bealeList = new HashMap<>();
 
-        InputStream in = Main.class.getClassLoader().getResourceAsStream("beale.wordlist.txt");
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-
-        String line;
-
-        while ((line = reader.readLine()) != null) {
-            String[] parts = line.split("\t");
-            bealeList.put(parts[0], parts[1]);
+        try {
+            bealeList = generateBealeList();
+        } catch (IOException ioe) {
+            logger.log(Level.SEVERE, "Could not find Diceware file.", ioe);
+            System.exit(1);
+        } catch (NullPointerException npe) {
+            logger.log(Level.SEVERE, "Diceware file empty.", npe);
+            System.exit(1);
         }
+
+        dicewareBuilder = generateDicewareString(dicewareBuilder, bealeList);
+
+        System.out.println(String.format("Password is: %s%n", dicewareBuilder.toString())); // NOSONAR
+
+    }
+
+    private static StringBuilder generateDicewareString(StringBuilder dicewareBuilder, HashMap<String, String> bealeList) {
 
         int randomNumber;
 
@@ -43,7 +55,24 @@ public class Main {
             }
         }
 
-        System.out.println(dicewareBuilder.toString());
+        return dicewareBuilder;
+    }
 
+    private static HashMap<String, String> generateBealeList() throws IOException, NullPointerException {
+        HashMap<String, String> bealeList = new HashMap<>();
+
+        try (InputStream in = Main.class.getClassLoader().getResourceAsStream("beale.wordlist.txt")){
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\t");
+                bealeList.put(parts[0], parts[1]);
+            }
+        }
+
+        return bealeList;
     }
 }
