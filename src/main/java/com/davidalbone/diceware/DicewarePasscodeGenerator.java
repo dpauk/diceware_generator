@@ -1,7 +1,6 @@
 package com.davidalbone.diceware;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -9,32 +8,27 @@ import java.util.logging.Logger;
 public class DicewarePasscodeGenerator {
 
     private final Logger logger = Logger.getLogger(Main.class.getName());
-
-    private Random rand = new Random();
-
-    private int numberOfWordsInPasscode = 3;
-
-    private StringBuilder passphraseBuilder = new StringBuilder();
-
     DicewareMapping dicewareMapping;
-
+    private Random rand = new Random();
+    private int numberOfWordsInPassphrase = 3;
+    private StringBuilder passphraseBuilder = new StringBuilder();
     private String lastPasscodeGenerated;
 
-    public String getLastPasscodeGenerated() {
-        this.lastPasscodeGenerated = passphraseBuilder.toString();
-        return this.lastPasscodeGenerated;
-    }
-
     DicewarePasscodeGenerator(int numberOfWordsInPasscode) {
-        this.numberOfWordsInPasscode = numberOfWordsInPasscode;
-        generatePasscode();
+        this.numberOfWordsInPassphrase = numberOfWordsInPasscode;
+        generatePassphrase();
     }
 
     DicewarePasscodeGenerator() {
         this(3);
     }
 
-    public void generatePasscode() {
+    public String getLastPasscodeGenerated() {
+        this.lastPasscodeGenerated = passphraseBuilder.toString();
+        return this.lastPasscodeGenerated;
+    }
+
+    public void generatePassphrase() {
 
         try {
             dicewareMapping = new DicewareMapping();
@@ -43,25 +37,22 @@ public class DicewarePasscodeGenerator {
             System.exit(1);
         }
 
-        passphraseBuilder = generateDicewareString(passphraseBuilder);
+        buildPassphrase();
     }
 
+    private void buildPassphrase() {
 
-    private StringBuilder generateDicewareString(StringBuilder dicewareBuilder) {
-
-        for (int numberOfWords = 0; numberOfWords < numberOfWordsInPasscode; numberOfWords++) {
+        for (int numberOfWords = 0; numberOfWords < numberOfWordsInPassphrase; numberOfWords++) {
             StringBuilder bealeNumber = generateFiveDigitNumber();
 
             Boolean isLastWord = false;
 
-            if (numberOfWords == (numberOfWordsInPasscode - 1)) {
+            if (numberOfWords == (numberOfWordsInPassphrase - 1)) {
                 isLastWord = true;
             }
 
-            dicewareBuilder.append(updatePasscodeString(isLastWord, bealeNumber));
+            passphraseBuilder.append(updatePasscodeString(isLastWord, bealeNumber));
         }
-
-        return dicewareBuilder;
     }
 
     private String updatePasscodeString(boolean isLastWord, StringBuilder bealeNumber) {
