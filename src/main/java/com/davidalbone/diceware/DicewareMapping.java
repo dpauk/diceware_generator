@@ -30,7 +30,8 @@ public class DicewareMapping {
     }
 
     public String getWordMappedToNumber(String numberToFindWordFor) {
-        if (numberToFindWordFor.length() != 5) {
+        String expectedPattern = "[1-6]{5}";
+        if (!numberToFindWordFor.matches(expectedPattern)) {
             throw new RuntimeException();
         }
 
